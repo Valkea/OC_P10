@@ -7,37 +7,112 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.TextField(max_length=8192, verbose_name='Description')),
-                ('created_time', models.DateTimeField(auto_now_add=True, verbose_name='Date de création')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(max_length=8192, verbose_name="Description"),
+                ),
+                (
+                    "created_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date de création"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Issue',
+            name="Issue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=128, verbose_name='Title')),
-                ('description', models.TextField(max_length=8192, verbose_name='Description')),
-                ('tag', models.PositiveSmallIntegerField(choices=[('0', 'Bug'), ('1', 'Amélioration'), ('2', 'Tâche')], default='0', verbose_name='Balise')),
-                ('priority', models.PositiveSmallIntegerField(choices=[('0', 'Faible'), ('1', 'Moyenne'), ('2', 'Élevée')], default='0', verbose_name='Priorité')),
-                ('status', models.PositiveSmallIntegerField(choices=[('0', 'À faire'), ('1', 'En cours'), ('2', 'Terminé')], default='0', verbose_name='Statut')),
-                ('created_time', models.DateTimeField(auto_now_add=True, verbose_name='Date de création')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=128, verbose_name="Title")),
+                (
+                    "description",
+                    models.TextField(max_length=8192, verbose_name="Description"),
+                ),
+                (
+                    "tag",
+                    models.PositiveSmallIntegerField(
+                        choices=[("0", "Bug"), ("1", "Amélioration"), ("2", "Tâche")],
+                        default="0",
+                        verbose_name="Balise",
+                    ),
+                ),
+                (
+                    "priority",
+                    models.PositiveSmallIntegerField(
+                        choices=[("0", "Faible"), ("1", "Moyenne"), ("2", "Élevée")],
+                        default="0",
+                        verbose_name="Priorité",
+                    ),
+                ),
+                (
+                    "status",
+                    models.PositiveSmallIntegerField(
+                        choices=[("0", "À faire"), ("1", "En cours"), ("2", "Terminé")],
+                        default="0",
+                        verbose_name="Statut",
+                    ),
+                ),
+                (
+                    "created_time",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date de création"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Project',
+            name="Project",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=128, verbose_name='Title')),
-                ('description', models.TextField(max_length=8192, verbose_name='Description')),
-                ('type', models.PositiveSmallIntegerField(choices=[('0', 'Back-end'), ('1', 'Front-end'), ('2', 'iOS'), ('3', 'Android')], default='0', verbose_name='Type')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=128, verbose_name="Title")),
+                (
+                    "description",
+                    models.TextField(max_length=8192, verbose_name="Description"),
+                ),
+                (
+                    "type",
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            ("0", "Back-end"),
+                            ("1", "Front-end"),
+                            ("2", "iOS"),
+                            ("3", "Android"),
+                        ],
+                        default="0",
+                        verbose_name="Type",
+                    ),
+                ),
             ],
         ),
     ]

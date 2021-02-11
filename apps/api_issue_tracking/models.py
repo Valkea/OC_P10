@@ -82,7 +82,9 @@ class Issue(models.Model):
 
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
 
-    contributors = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="contributors")
+    contributors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="contributors"
+    )
 
 
 class Comment(models.Model):
