@@ -29,6 +29,10 @@ class Project(models.Model):
     #         on_delete=models.SET(get_sentinel_user),
     #         )
 
+    contributors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="contributors", through='Contributor'
+    )
+
 
 class Issue(models.Model):
     class Tag(models.TextChoices):
@@ -82,10 +86,6 @@ class Issue(models.Model):
 
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
 
-    contributors = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="contributors"
-    )
-
 
 class Comment(models.Model):
 
@@ -106,33 +106,34 @@ class Comment(models.Model):
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
 
 
-# class Contributor(models.Model):  # TODO pas sur du tout !
-#
-#     class Role(models.TextChoices):
-#         OWNER = 0, "Responsable"
-#         CONTRIBUTOR = 1, "Contributeur"
-#
-#     class Permission(models.TextChoices):
-#         NONE = 0, "Aucune permission"
-#         READONLY = 1, "Lecture uniquement"
-#         ALL = 3, "Lecture & Ecriture"
-#
-#     user = models.ForeignKey(
-#         to=settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE,  # TODO
-#         related_name="contributor_user",
-#     )
-#
-#     project = models.ForeignKey(
-#         to=Project,
-#         on_delete=models.CASCADE,
-#         related_name="project_contributors",
-#     )
-#
-#     permission = models.PositiveSmallIntegerField(
-#         "Permission", max_length=1, choices=Permission.choices, default=Permission.ALL
-#     )
-#
-#     role = models.PositiveSmallIntegerField(
-#         "Rôle", max_length=1, choices=Role.choices, default=Role.OWNER
-#     )
+class Contributor(models.Model):  # TODO pas sur du tout !
+    """ This model is automatically created by the ManyToManyField in the Project,
+    but as we need to add some extra fields, we must redefine it as a through model.
+    """
+
+    class Role(models.TextChoices):
+        OWNER = 0, "Responsable"
+        CONTRIBUTOR = 1, "Contributeur"
+
+    class Permission(models.TextChoices):
+        NONE = 0, "Aucune permission"
+        READONLY = 1, "Lecture uniquement"
+        ALL = 3, "Lecture & Ecriture"
+
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,  # TODO
+    )
+
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.SET(get_sentinel_user),
+    )
+
+    permission = models.PositiveSmallIntegerField(
+        "Permission", choices=Permission.choices, default=Permission.ALL
+    )
+
+    role = models.PositiveSmallIntegerField(
+        "Rôle", choices=Role.choices, default=Role.OWNER
+    )
