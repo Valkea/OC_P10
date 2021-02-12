@@ -77,9 +77,8 @@ class ContributorSerializer(serializers.ModelSerializer):
     # user = UserSerializer()
     # project = ProjectSerializer()
 
-    # user_username = serializers.CharField(source='user.username', read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = Contributor
-        # fields = ["id", "user_id", "user_username", "permission", "role", "project_id"]
-        fields = ["id", "user_id", "permission", "role", "project_id"]
+        fields = ["id", "user", "user_username", "permission", "role", "project"]
