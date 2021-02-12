@@ -21,16 +21,19 @@
 # from rest_framework import viewsets
 # from rest_framework.exceptions import NotFound
 from rest_framework import generics
+from rest_framework import permissions
 
 from .models import User
 from .serializers import UserSerializer
 
 
 class UserViewSet(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserDetail(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()

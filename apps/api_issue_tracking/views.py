@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
+from rest_framework import permissions
 
 from .models import Project, Issue, Comment, Contributor
 from .serializers import (
@@ -12,11 +13,16 @@ from .serializers import (
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
+    # def perform_create(self, serializer):
+    #    serializer.save(owner=self.request.user)
+
 
 class IssueViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = IssueSerializer
     queryset = Issue.objects.all()
 
@@ -28,8 +34,18 @@ class IssueViewSet(viewsets.ModelViewSet):
             raise NotFound(f"A Project with id {project_id} does not exist")
         return self.queryset.filter(project=project)
 
+    # def perform_create(self, serializer):
+    #     print("serializer:", serializer)
+    #     print("========>", serializer.validated_data['author_user'], "<===========")
+    #     if serializer.validated_data['author_user']:
+    #         serializer.save()
+    #     else:
+    #         serializer.save(author_user=self.request.user)
+
+
 
 class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
@@ -52,6 +68,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class ContributorViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()
 
