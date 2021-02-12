@@ -18,12 +18,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 class IssueViewSet(viewsets.ModelViewSet):
     serializer_class = IssueSerializer
-    # queryset = Issue.objects.all()
-
-    queryset = Issue.objects.all().select_related("project")
-    # ).prefetch_related(
-    #    'authors'
-    # )
+    queryset = Issue.objects.all()
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get("project_pk")
@@ -36,12 +31,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    # queryset = Comment.objects.all()
-
-    queryset = Comment.objects.all().select_related("issue")
-    # ).prefetch_related(
-    #    'authors'
-    # )
+    queryset = Comment.objects.all()
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get("project_pk")
@@ -63,12 +53,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class ContributorViewSet(viewsets.ModelViewSet):
     serializer_class = ContributorSerializer
-    # queryset = Contributor.objects.all()
-
     queryset = Contributor.objects.all()
-    # .select_related("project")
-    # .prefetch_related("authors")
-    print("ContributorViewSet:", queryset)
 
     def get_queryset(self, *args, **kwargs):
         project_id = self.kwargs.get("project_pk")
