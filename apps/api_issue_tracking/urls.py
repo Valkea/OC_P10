@@ -48,8 +48,8 @@ urlpatterns = [
         "projects/<int:project_pk>/users/",
         ContributorViewSet.as_view(
             {
-                "get": "list",          # 9
-                "post": "create",       # 8
+                "get": "list",  # 9
+                "post": "create",  # 8
             }
         ),
         name="project_users",
@@ -60,7 +60,7 @@ urlpatterns = [
             {
                 "get": "retrieve",
                 "put": "update",
-                "delete": "destroy",    # 10
+                "delete": "destroy",  # 10
             }
         ),
         name="project_user",
@@ -79,32 +79,32 @@ urlpatterns = [
         "projects/<int:project_pk>/issues/<int:pk>",
         IssueViewSet.as_view(
             {
-                "get": "retrieve",      # ? pas dans la doc
-                "put": "update",        # 13
-                "delete": "destroy",    # 14
+                "get": "retrieve",  # ? pas dans la doc
+                "put": "update",  # 13
+                "delete": "destroy",  # 14
             }
         ),
         name="project_issue",
     ),
-    # path(
-    #     "projects/<int:project_pk>/issues/<int:pk>/comments",
-    #     CommentViewSet.as_view(
-    #         {
-    #             "get": "list",          # 16
-    #             "post": "create",       # 15
-    #         }
-    #     ),
-    #     name="project_issue_comments",
-    # ),
-    # path(
-    #     "projects/<int:project_pk>/issues/<int:issue_pk>/comments/<int:pk>",
-    #     CommentViewSet.as_view(
-    #         {
-    #             "get": "retrieve",      # 19
-    #             "put": "update",        # 17
-    #             "delete": "destroy",    # 18
-    #         }
-    #     ),
-    #     name="project_issue_comment",
-    # ),
+    path(
+        "projects/<int:project_pk>/issues/<int:issue_pk>/comments",
+        CommentViewSet.as_view(
+            {
+                "get": "list",  # 16
+                "post": "create",  # 15
+            }
+        ),
+        name="project_issue_comments",
+    ),
+    path(
+        "projects/<int:project_pk>/issues/<int:issue_pk>/comments/<int:pk>",
+        CommentViewSet.as_view(
+            {
+                "get": "retrieve",  # 19
+                "put": "update",  # 17
+                "delete": "destroy",  # 18
+            }
+        ),
+        name="project_issue_comment",
+    ),
 ]
