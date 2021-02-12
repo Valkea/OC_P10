@@ -15,28 +15,9 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import UserViewSet
+from .views import UserViewSet, UserDetail
 
 urlpatterns = [
-    path(
-        "users/",
-        UserViewSet.as_view(
-            {
-                "get": "list",  # 3
-                "post": "create",  # 4
-            }
-        ),
-        name="projects",
-    ),
-    path(
-        "users/<int:pk>/",
-        UserViewSet.as_view(
-            {
-                "get": "retrieve",  # 5
-                "put": "update",  # 6
-                "delete": "destroy",  # 7
-            }
-        ),
-        name="project",
-    ),
+    path("users/", UserViewSet.as_view(), name="users_list",),
+    path("users/<int:pk>/", UserDetail.as_view(), name="user_detail",),
 ]

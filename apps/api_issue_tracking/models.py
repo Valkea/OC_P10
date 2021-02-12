@@ -130,6 +130,7 @@ class Contributor(models.Model):  # TODO pas sur du tout !
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,  # TODO
+        related_name="contributor_user",
     )
 
     project = models.ForeignKey(
