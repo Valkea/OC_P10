@@ -55,7 +55,7 @@ urlpatterns = [
         name="project_users",
     ),
     path(
-        "projects/<int:project_pk>/users/<int:pk>",
+        "projects/<int:project_pk>/users/<int:pk>/",
         ContributorViewSet.as_view(
             {
                 "get": "retrieve",
@@ -76,7 +76,7 @@ urlpatterns = [
         name="project_issues",
     ),
     path(
-        "projects/<int:project_pk>/issues/<int:pk>",
+        "projects/<int:project_pk>/issues/<int:pk>/",
         IssueViewSet.as_view(
             {
                 "get": "retrieve",  # ? pas dans la doc
@@ -87,7 +87,7 @@ urlpatterns = [
         name="project_issue",
     ),
     path(
-        "projects/<int:project_pk>/issues/<int:issue_pk>/comments",
+        "projects/<int:project_pk>/issues/<int:issue_pk>/comments/",
         CommentViewSet.as_view(
             {
                 "get": "list",  # 16
@@ -97,7 +97,7 @@ urlpatterns = [
         name="project_issue_comments",
     ),
     path(
-        "projects/<int:project_pk>/issues/<int:issue_pk>/comments/<int:pk>",
+        "projects/<int:project_pk>/issues/<int:issue_pk>/comments/<int:pk>/",
         CommentViewSet.as_view(
             {
                 "get": "retrieve",  # 19
