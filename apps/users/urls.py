@@ -1,4 +1,4 @@
-"""project URL Configuration
+""" users URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -13,13 +13,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include
 from django.urls import path
 
+from .views import UserViewSet
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    # path("", include("rest_framework.urls")),
-    path("", include("apps.api_issue_tracking.urls")),
-    path("", include("apps.users.urls")),
+    path(
+        "users/",
+        UserViewSet.as_view(
+            {
+                "get": "list",  # 3
+                "post": "create",  # 4
+            }
+        ),
+        name="projects",
+    ),
+    path(
+        "users/<int:pk>/",
+        UserViewSet.as_view(
+            {
+                "get": "retrieve",  # 5
+                "put": "update",  # 6
+                "delete": "destroy",  # 7
+            }
+        ),
+        name="project",
+    ),
 ]
