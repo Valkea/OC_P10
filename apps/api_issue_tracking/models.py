@@ -11,17 +11,17 @@ def get_sentinel_user():
 
 class Project(models.Model):
     class ProjectType(models.TextChoices):
-        BACKEND = 0, "Back-end"
-        FRONTEND = 1, "Front-end"
-        IOS = 2, "iOS"
-        ANDROID = 3, "Android"
+        BACKEND = "BE", "Back-end"
+        FRONTEND = "FE", "Front-end"
+        IOS = "IO", "iOS"
+        ANDROID = "AN", "Android"
 
     title = models.CharField("Title", max_length=128)
 
     description = models.TextField("Description", max_length=8192)
 
-    type = models.PositiveSmallIntegerField(
-        "Type", choices=ProjectType.choices, default=ProjectType.BACKEND
+    type = models.CharField(
+        "Type", max_length=2, choices=ProjectType.choices, default=ProjectType.BACKEND
     )
 
     # author_user = models.ForeignKey(
@@ -30,36 +30,37 @@ class Project(models.Model):
     #         )
 
     contributors = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="contributors", through='Contributor'
+        settings.AUTH_USER_MODEL, related_name="contributors", through="Contributor"
     )
+
+    def __str__(self):
+        return f"PROJECT: {self.title}"
 
 
 class Issue(models.Model):
     class Tag(models.TextChoices):
-        BUG = 0, "Bug"
-        FEAT = 1, "Amélioration"
-        TASK = 2, "Tâche"
+        BUG = "BUG", "Bug"
+        FEAT = "FEAT", "Amélioration"
+        TASK = "TASK", "Tâche"
 
     class Priority(models.TextChoices):
-        LOW = 0, "Faible"
-        MEDIUM = 1, "Moyenne"
-        HIGH = 2, "Élevée"
+        LOW = "L", "Faible"
+        MEDIUM = "M", "Moyenne"
+        HIGH = "H", "Élevée"
 
     class Status(models.TextChoices):
-        TODOS = 0, "À faire"
-        OPENED = 1, "En cours"
-        CLOSED = 2, "Terminé"
+        TODOS = "TODO", "À faire"
+        OPENED = "OPENED", "En cours"
+        CLOSED = "CLOSED", "Terminé"
 
     title = models.CharField("Title", max_length=128)
 
     description = models.TextField("Description", max_length=8192)
 
-    tag = models.PositiveSmallIntegerField(
-        "Balise", choices=Tag.choices, default=Tag.BUG
-    )
+    tag = models.CharField("Balise", max_length=4, choices=Tag.choices, default=Tag.BUG)
 
-    priority = models.PositiveSmallIntegerField(
-        "Priorité", choices=Priority.choices, default=Priority.LOW
+    priority = models.CharField(
+        "Priorité", max_length=1, choices=Priority.choices, default=Priority.LOW
     )
 
     project = models.ForeignKey(
@@ -68,8 +69,8 @@ class Issue(models.Model):
         related_name="project_issues",
     )
 
-    status = models.PositiveSmallIntegerField(
-        "Statut", choices=Status.choices, default=Status.TODOS
+    status = models.CharField(
+        "Statut", max_length=6, choices=Status.choices, default=Status.TODOS
     )
 
     author_user = models.ForeignKey(
@@ -85,6 +86,9 @@ class Issue(models.Model):
     )
 
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
+
+    def __str__(self):
+        return f"ISSUE: {self.title}"
 
 
 class Comment(models.Model):
@@ -105,20 +109,23 @@ class Comment(models.Model):
 
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
 
+    def __str__(self):
+        return f"COMMENT: {self.description[:20]}..."
+
 
 class Contributor(models.Model):  # TODO pas sur du tout !
-    """ This model is automatically created by the ManyToManyField in the Project,
+    """This model is automatically created by the ManyToManyField in the Project,
     but as we need to add some extra fields, we must redefine it as a through model.
     """
 
     class Role(models.TextChoices):
-        OWNER = 0, "Responsable"
-        CONTRIBUTOR = 1, "Contributeur"
+        OWNER = "OWNER", "Responsable"
+        CONTRIBUTOR = "CONTRIB", "Contributeur"
 
     class Permission(models.TextChoices):
-        NONE = 0, "Aucune permission"
-        READONLY = 1, "Lecture uniquement"
-        ALL = 3, "Lecture & Ecriture"
+        NONE = "NONE", "Aucune permission"
+        READONLY = "READ", "Lecture uniquement"
+        ALL = "ALL", "Lecture & Ecriture"
 
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
@@ -130,10 +137,13 @@ class Contributor(models.Model):  # TODO pas sur du tout !
         on_delete=models.SET(get_sentinel_user),
     )
 
-    permission = models.PositiveSmallIntegerField(
-        "Permission", choices=Permission.choices, default=Permission.ALL
+    permission = models.CharField(
+        "Permission", max_length=10, choices=Permission.choices, default=Permission.ALL
     )
 
-    role = models.PositiveSmallIntegerField(
-        "Rôle", choices=Role.choices, default=Role.OWNER
+    role = models.CharField(
+        "Rôle", max_length=10, choices=Role.choices, default=Role.OWNER
     )
+
+    def __str__(self):
+        return f"CONTRIBUTOR: {self.user.username}"
