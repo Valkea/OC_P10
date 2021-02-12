@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Project, Issue, Comment, Contributor
 from apps.users.models import User
+from apps.users.serializers import UserSerializer
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -11,9 +12,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class IssueSerializer(serializers.ModelSerializer):
 
-    # author_user_id = serializers.ReadOnlyField()
-    # created_time = serializers.ReadOnlyField()
-    # project_id = serializers.RelatedField(source='project', read_only=True)
+    # author_user = UserSerializer(read_only=True)
+    # assignee_user = UserSerializer(read_only=True)
+    # project = ProjectSerializer(read_only=True)
 
     class Meta:
         model = Issue
@@ -23,12 +24,37 @@ class IssueSerializer(serializers.ModelSerializer):
             "description",
             "tag",
             "priority",
-            "project_id",
+            "project",
             "status",
-            "author_user_id",
-            "assignee_user_id",
+            "author_user",
+            "assignee_user",
             "created_time",
         ]
+
+    # def create(self, validated_data) -> Issue:
+
+    #     print("validated_data:", validated_data)
+
+    #     # key_author_user = User.objects.create(**validated_data.get('author_user'))
+    #     # key_assignee_user = User.objects.create(**validated_data.get('assignee_user'))
+    #     # key_project = Project.objects.create(**validated_data.get('project'))
+
+    #     # create connection
+    #     conn = Issue.objects.create(
+    #         title=validated_data.get('title'),
+    #         description=validated_data.get('description'),
+    #         tag=validated_data.get('tag'),
+    #         priority=validated_data.get('priority'),
+    #         # project=key_project,
+    #         project=validated_data.get('project'),
+    #         status=validated_data.get('status'),
+    #         # author_user=key_author_user,
+    #         author_user=validated_data.get('author_user'),
+    #         # assignee_user=key_assignee_user,
+    #         assignee_user=validated_data.get('assignee_user'),
+    #         created_time=validated_data.get('created_time'),
+    #     )
+    #     return conn
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -38,12 +64,6 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["id", "description", "author_user_id", "issue_id", "created_time"]
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
 
 
 class ContributorSerializer(serializers.ModelSerializer):
