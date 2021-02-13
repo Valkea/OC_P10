@@ -17,9 +17,17 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
+from django.conf.urls import url
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_jwt.views import verify_jwt_token
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("rest_framework.urls")),  # login / logout
     path("", include("apps.api_issue_tracking.urls")),
     path("", include("apps.users.urls")),
+    path("auth-jwt/", obtain_jwt_token),
+    path("auth-jwt-refresh/", refresh_jwt_token),
+    path("auth-jwt-verify/", verify_jwt_token),
 ]

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -124,3 +125,16 @@ STATIC_URL = "/static/"
 
 # Define the default AUTH_USER_MODEL value
 AUTH_USER_MODEL = "users.User"
+
+# Define Restful default values
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+    ),
+}
+
+JWT_AUTH = {
+    "JWT_AUTH_HEADER_PREFIX": "JWT",
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(seconds=3000),
+}
