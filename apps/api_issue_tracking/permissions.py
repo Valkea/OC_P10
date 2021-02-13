@@ -5,21 +5,33 @@ from .models import Project, Issue, Comment, Contributor
 
 def has_contrib_permission(contrib, request):
     if contrib.permission == Contributor.Permission.NONE:
+        print("HASC 01 False")
         return False
     elif contrib.permission == Contributor.Permission.READONLY:
+        print("HASC 02", request.method in permissions.SAFE_METHODS)
         return request.method in permissions.SAFE_METHODS
+    print("HASC 03 True")
     return True
 
 
 class IsProjectOwer(permissions.BasePermission):
+
     def has_object_permission(self, request, view, obj):
-        if type(obj) != Project:
+        print("IsProjectOwer OBJ :", request, view, obj)
+
+        if type(obj) == Project:
+            current_project = obj
+        elif type(obj) == Contributor:
+            current_project = obj.project
+        else:
             return False
 
         try:
             contrib = Contributor.objects.get(
-                user=request.user, project=obj, role=Contributor.Role.OWNER
-            )
+                    user=request.user,
+                    project=current_project,
+                    role=Contributor.Role.OWNER)
+
             return has_contrib_permission(contrib, request)
 
         except Contributor.DoesNotExist:
@@ -27,14 +39,23 @@ class IsProjectOwer(permissions.BasePermission):
 
 
 class IsProjectContributor(permissions.BasePermission):
+
     def has_object_permission(self, request, view, obj):
-        if type(obj) != Project:
+        print("IsProjectContributor:", request, view, obj)
+
+        if type(obj) == Project:
+            current_project = obj
+        elif type(obj) == Contributor:
+            current_project = obj.project
+        else:
             return False
 
         try:
             contrib = Contributor.objects.get(
-                user=request.user, project=obj, role=Contributor.Role.CONTRIBUTOR
-            )
+                    user=request.user,
+                    project=current_project,
+                    role=Contributor.Role.CONTRIBUTOR)
+
             if has_contrib_permission(contrib, request):
                 return request.method in permissions.SAFE_METHODS
             return False

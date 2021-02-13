@@ -71,7 +71,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class ContributorViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
+    permission_classes = [
+        (permissions.IsAuthenticated & IsProjectOwer) | (permissions.IsAuthenticated & IsProjectContributor)
+            ]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()
 
