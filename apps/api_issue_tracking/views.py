@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework import permissions
@@ -10,19 +10,21 @@ from .serializers import (
     CommentSerializer,
     ContributorSerializer,
 )
+from .permissions import IsOwnerOrContributor, IsProjectOwer, IsProjectContributor
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        (permissions.IsAuthenticated & IsProjectOwer) | (permissions.IsAuthenticated & IsProjectContributor)
+            ]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
-    # def perform_create(self, serializer):
-    #    serializer.save(owner=self.request.user)
-
 
 class IssueViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = [permissions.IsAuthenticated & IsContributor]
+    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
     serializer_class = IssueSerializer
     queryset = Issue.objects.all()
 
@@ -43,9 +45,9 @@ class IssueViewSet(viewsets.ModelViewSet):
     #         serializer.save(author_user=self.request.user)
 
 
-
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated & IsContributor]
+    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
@@ -68,7 +70,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class ContributorViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()
 
