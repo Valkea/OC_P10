@@ -18,6 +18,14 @@ from django.urls import path
 from .views import UserViewSet, UserDetail
 
 urlpatterns = [
-    path("users/", UserViewSet.as_view(), name="users_list",),
-    path("users/<int:pk>/", UserDetail.as_view(), name="user_detail",),
+    path(
+        "users/",
+        UserViewSet.as_view(),
+        name="users_list",
+    ),
+    path(
+        "users/<int:pk>/",
+        UserDetail.as_view(),
+        name="user_detail",
+    ),
 ]
