@@ -14,14 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include
-from django.urls import path
+from django.urls import include, path
 from django.views.generic import RedirectView
-
 from django.conf.urls import url
-from rest_framework_jwt.views import obtain_jwt_token
-from rest_framework_jwt.views import refresh_jwt_token
-from rest_framework_jwt.views import verify_jwt_token
+
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+
+import debug_toolbar
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -33,4 +32,5 @@ urlpatterns = [
     path("auth-jwt-verify/", verify_jwt_token, "verify-jwt"),
 
     url("", RedirectView.as_view(pattern_name='login-jwt', permanent=False)),
+    path('__debug__/', include(debug_toolbar.urls)),
 ]
