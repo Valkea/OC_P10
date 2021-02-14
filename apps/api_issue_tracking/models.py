@@ -135,7 +135,8 @@ class Contributor(models.Model):  # TODO pas sur du tout !
 
     project = models.ForeignKey(
         to=Project,
-        on_delete=models.SET(get_sentinel_user),
+        # on_delete=models.SET(get_sentinel_user),
+        on_delete=models.CASCADE,  # TODO
     )
 
     permission = models.CharField(
