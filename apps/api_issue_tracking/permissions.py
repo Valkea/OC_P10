@@ -15,7 +15,6 @@ def has_contrib_permission(contrib, request):
 
 
 class IsProjectOwer(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
         print("IsProjectOwer OBJ :", request, view, obj)
 
@@ -28,9 +27,8 @@ class IsProjectOwer(permissions.BasePermission):
 
         try:
             contrib = Contributor.objects.get(
-                    user=request.user,
-                    project=current_project,
-                    role=Contributor.Role.OWNER)
+                user=request.user, project=current_project, role=Contributor.Role.OWNER
+            )
 
             return has_contrib_permission(contrib, request)
 
@@ -39,7 +37,6 @@ class IsProjectOwer(permissions.BasePermission):
 
 
 class IsProjectContributor(permissions.BasePermission):
-
     def has_object_permission(self, request, view, obj):
         print("IsProjectContributor:", request, view, obj)
 
@@ -52,9 +49,10 @@ class IsProjectContributor(permissions.BasePermission):
 
         try:
             contrib = Contributor.objects.get(
-                    user=request.user,
-                    project=current_project,
-                    role=Contributor.Role.CONTRIBUTOR)
+                user=request.user,
+                project=current_project,
+                role=Contributor.Role.CONTRIBUTOR,
+            )
 
             if has_contrib_permission(contrib, request):
                 return request.method in permissions.SAFE_METHODS
