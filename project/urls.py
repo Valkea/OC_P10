@@ -18,7 +18,11 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from django.conf.urls import url
 
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+from rest_framework_jwt.views import (
+    obtain_jwt_token,
+    refresh_jwt_token,
+    verify_jwt_token,
+)
 
 import debug_toolbar
 
@@ -30,7 +34,6 @@ urlpatterns = [
     path("auth-jwt/", obtain_jwt_token, name="login-jwt"),
     path("auth-jwt-refresh/", refresh_jwt_token, name="renew-jwt"),
     path("auth-jwt-verify/", verify_jwt_token, "verify-jwt"),
-
-    url("", RedirectView.as_view(pattern_name='login-jwt', permanent=False)),
-    path('__debug__/', include(debug_toolbar.urls)),
+    url("", RedirectView.as_view(pattern_name="login-jwt", permanent=False)),
+    path("__debug__/", include(debug_toolbar.urls)),
 ]

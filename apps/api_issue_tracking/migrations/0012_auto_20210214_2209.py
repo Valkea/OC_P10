@@ -7,13 +7,16 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_issue_tracking', '0011_auto_20210213_1558'),
+        ("api_issue_tracking", "0011_auto_20210213_1558"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contributor',
-            name='project',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api_issue_tracking.project'),
+            model_name="contributor",
+            name="project",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="api_issue_tracking.project",
+            ),
         ),
     ]
