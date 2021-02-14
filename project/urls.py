@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
+from django.views.generic import RedirectView
 
 from django.conf.urls import url
 from rest_framework_jwt.views import obtain_jwt_token
@@ -27,7 +28,9 @@ urlpatterns = [
     path("", include("rest_framework.urls")),  # login / logout
     path("", include("apps.api_issue_tracking.urls")),
     path("", include("apps.users.urls")),
-    path("auth-jwt/", obtain_jwt_token),
-    path("auth-jwt-refresh/", refresh_jwt_token),
-    path("auth-jwt-verify/", verify_jwt_token),
+    path("auth-jwt/", obtain_jwt_token, name="login-jwt"),
+    path("auth-jwt-refresh/", refresh_jwt_token, name="renew-jwt"),
+    path("auth-jwt-verify/", verify_jwt_token, "verify-jwt"),
+
+    url("", RedirectView.as_view(pattern_name='login-jwt', permanent=False)),
 ]
