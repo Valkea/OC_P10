@@ -7,6 +7,21 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ["id", "title", "description", "type"]
 
+    def create(self, validated_data):
+
+        print("create:", validated_data)
+
+        new_project = Project.objects.create(**validated_data)
+
+        Contributor.objects.create(
+            user=self.context["request"].user,
+            permission=Contributor.Permission.ALL,
+            role=Contributor.Role.OWNER,
+            project=new_project,
+        )
+
+        return new_project
+
 
 class IssueSerializer(serializers.ModelSerializer):
 

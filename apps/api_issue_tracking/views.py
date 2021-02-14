@@ -2,6 +2,8 @@
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Project, Issue, Comment, Contributor
 from .serializers import (
@@ -16,8 +18,9 @@ from .permissions import IsOwnerOrContributor, IsProjectOwer, IsProjectContribut
 class ProjectViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [
-        (permissions.IsAuthenticated & IsProjectOwer) | (permissions.IsAuthenticated & IsProjectContributor)
-            ]
+        (permissions.IsAuthenticated & IsProjectOwer)
+        | (permissions.IsAuthenticated & IsProjectContributor)
+    ]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
@@ -72,8 +75,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [
-        (permissions.IsAuthenticated & IsProjectOwer) | (permissions.IsAuthenticated & IsProjectContributor)
-            ]
+        (permissions.IsAuthenticated & IsProjectOwer)
+        | (permissions.IsAuthenticated & IsProjectContributor)
+    ]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()
 
