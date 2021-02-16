@@ -9,7 +9,10 @@ def has_contrib_permission(contrib, request):
         print(">>>>>>> has_contrib_permission 01 False")
         return False
     elif contrib.permission == Contributor.Permission.READONLY:
-        print(">>>>>>> has_contrib_permission 02", request.method in permissions.SAFE_METHODS)
+        print(
+            ">>>>>>> has_contrib_permission 02",
+            request.method in permissions.SAFE_METHODS,
+        )
         return request.method in permissions.SAFE_METHODS
     print(">>>>>>> has_contrib_permission 03 True")
     return True

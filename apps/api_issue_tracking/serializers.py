@@ -14,12 +14,19 @@ class ContributorSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
 
-    owner = serializers.SerializerMethodField()
+    administrators = serializers.SerializerMethodField()
     contributors = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ["id", "title", "description", "type", "owner", "contributors"]
+        fields = [
+            "id",
+            "title",
+            "description",
+            "type",
+            "administrators",
+            "contributors",
+        ]
 
     def create(self, validated_data):
 
@@ -36,19 +43,26 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return new_project
 
-    def get_owner(self, obj):
-        selected_owner = Contributor.objects.get(
+    def get_administrators(self, obj):
+        selected = Contributor.objects.filter(
             project=obj, role=Contributor.Role.OWNER
-        )
+        )  # .distinct()
 
-        return ContributorSerializer(selected_owner, many=False).data
+        return ContributorSerializer(selected, many=True).data
 
     def get_contributors(self, obj):
-        selected_contributors = Contributor.objects.filter(
+        selected = Contributor.objects.filter(
             project=obj, role=Contributor.Role.CONTRIBUTOR
         )  # .distinct()
 
-        return ContributorSerializer(selected_contributors, many=True).data
+        return ContributorSerializer(selected, many=True).data
+
+    # def get_owner(self, obj):
+    #     selected = Contributor.objects.get(
+    #         project=obj, role=Contributor.Role.OWNER
+    #     )
+
+    #     return ContributorSerializer(selected, many=False).data
 
 
 class IssueSerializer(serializers.ModelSerializer):
