@@ -38,27 +38,27 @@ class Project(models.Model):
 class Issue(models.Model):
     class Tag(models.TextChoices):
         BUG = "BUG", "Bug"
-        FEAT = "FEAT", "Amélioration"
-        TASK = "TASK", "Tâche"
+        FEAT = "FEAT", "Feature"
+        TASK = "TASK", "Task"
 
     class Priority(models.TextChoices):
-        LOW = "L", "Faible"
-        MEDIUM = "M", "Moyenne"
-        HIGH = "H", "Élevée"
+        LOW = "L", "Low"
+        MEDIUM = "M", "Medium"
+        HIGH = "H", "High"
 
     class Status(models.TextChoices):
-        TODOS = "TODO", "À faire"
-        OPENED = "OPENED", "En cours"
-        CLOSED = "CLOSED", "Terminé"
+        TODOS = "TODO", "New"
+        OPENED = "OPENED", "Opened"
+        CLOSED = "CLOSED", "Closed"
 
     title = models.CharField("Title", max_length=128)
 
     description = models.TextField("Description", max_length=8192)
 
-    tag = models.CharField("Balise", max_length=4, choices=Tag.choices, default=Tag.BUG)
+    tag = models.CharField("Tag", max_length=4, choices=Tag.choices, default=Tag.BUG)
 
     priority = models.CharField(
-        "Priorité", max_length=1, choices=Priority.choices, default=Priority.LOW
+        "Priority", max_length=1, choices=Priority.choices, default=Priority.LOW
     )
 
     project = models.ForeignKey(
@@ -68,7 +68,7 @@ class Issue(models.Model):
     )
 
     status = models.CharField(
-        "Statut", max_length=6, choices=Status.choices, default=Status.TODOS
+        "Status", max_length=6, choices=Status.choices, default=Status.TODOS
     )
 
     author_user = models.ForeignKey(
@@ -85,7 +85,7 @@ class Issue(models.Model):
         null=True,
     )
 
-    created_time = models.DateTimeField("Date de création", auto_now_add=True)
+    created_time = models.DateTimeField("Creation date", auto_now_add=True)
 
     def __str__(self):
         return f"ISSUE: {self.title}"
@@ -107,7 +107,7 @@ class Comment(models.Model):
         related_name="comment_issue",
     )
 
-    created_time = models.DateTimeField("Date de création", auto_now_add=True)
+    created_time = models.DateTimeField("Creation date", auto_now_add=True)
 
     def __str__(self):
         return f"COMMENT: {self.description[:20]}..."
@@ -119,13 +119,13 @@ class Contributor(models.Model):
     """
 
     class Role(models.TextChoices):
-        OWNER = "OWNER", "Responsable"
-        CONTRIBUTOR = "CONTRIB", "Contributeur"
+        OWNER = "OWNER", "Administrator"
+        CONTRIBUTOR = "CONTRIB", "Contributor"
 
     class Permission(models.TextChoices):
-        NONE = "NONE", "Aucune permission"
-        READONLY = "READ", "Lecture uniquement"
-        ALL = "ALL", "Lecture & Ecriture"
+        NONE = "NONE", "No permission"
+        READONLY = "READ", "Read Only"
+        ALL = "ALL", "Read & Write"
 
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
@@ -144,7 +144,7 @@ class Contributor(models.Model):
     )
 
     role = models.CharField(
-        "Rôle", max_length=10, choices=Role.choices, default=Role.OWNER
+        "Role", max_length=10, choices=Role.choices, default=Role.OWNER
     )
 
     def __str__(self):
