@@ -36,6 +36,18 @@ class Project(models.Model):
     def __str__(self):
         return f"PROJECT: {self.title}"
 
+    # def create(self, *args, **kwargs):
+    #     print("CREATE PROJECT MODEL:", args, kwargs)
+    #     return super().create(*args, **kwargs)  # Call the "real" create() method.
+
+    # def update(self, *args, **kwargs):
+    #     print("UPDATE PROJECT MODEL:", args, kwargs)
+    #     return super().update(*args, **kwargs)  # Call the "real" update() method.
+
+    # def save(self, *args, **kwargs):
+    #     print("SAVE PROJECT MODEL:", args, kwargs)
+    #     return super().save(*args, **kwargs)  # Call the "real" save() method.
+
 
 class Issue(models.Model):
     class Tag(models.TextChoices):
@@ -83,12 +95,26 @@ class Issue(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
         related_name="assignees",
+        blank=True,
+        null=True,
     )
 
     created_time = models.DateTimeField("Date de création", auto_now_add=True)
 
     def __str__(self):
         return f"ISSUE: {self.title}"
+
+    # def create(self, *args, **kwargs):
+    #     print("CREATE ISSUE MODEL:", args, kwargs)
+    #     return super().create(*args, **kwargs)  # Call the "real" create() method.
+
+    # def update(self, *args, **kwargs):
+    #     print("UPDATE ISSUE MODEL:", args, kwargs)
+    #     return super().update(*args, **kwargs)  # Call the "real" update() method.
+
+    # def save(self, *args, **kwargs):
+    #     print("SAVE ISSUE MODEL:", args, kwargs)
+    #     return super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class Comment(models.Model):

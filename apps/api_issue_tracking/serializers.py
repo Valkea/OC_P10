@@ -9,7 +9,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        print("create:", validated_data)
+        print("CREATE PROJECT SERIALIZER:", self, validated_data)
 
         new_project = Project.objects.create(**validated_data)
 
@@ -21,6 +21,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
 
         return new_project
+
+    # def update(self, instance, validated_data):
+    #     print("UPDATE PROJECT SERIALIZER:", self, validated_data)
+    #     super().update(instance, validated_data)
+    #     return instance
+
+    # def save(self, validated_data):
+    #     return validated_data
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -48,6 +56,11 @@ class IssueSerializer(serializers.ModelSerializer):
             "assignee_username",
             "created_time",
         ]
+
+    # def create(self, validated_data):
+
+    #     print("CREATE ISSUE SERIALIZER:", self, validated_data)
+    #     return Issue.objects.create(**validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
