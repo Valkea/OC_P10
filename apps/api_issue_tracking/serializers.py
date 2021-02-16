@@ -1,11 +1,25 @@
 from rest_framework import serializers
+
 from .models import Project, Issue, Comment, Contributor
 
 
+class ContributorSerializer(serializers.ModelSerializer):
+
+    user_username = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Contributor
+        fields = ["id", "user", "user_username", "permission", "role", "project"]
+
+
 class ProjectSerializer(serializers.ModelSerializer):
+
+    owner = serializers.SerializerMethodField()
+    contributors = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
-        fields = ["id", "title", "description", "type"]
+        fields = ["id", "title", "description", "type", "owner", "contributors"]
 
     def create(self, validated_data):
 
@@ -22,13 +36,19 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return new_project
 
-    # def update(self, instance, validated_data):
-    #     print("UPDATE PROJECT SERIALIZER:", self, validated_data)
-    #     super().update(instance, validated_data)
-    #     return instance
+    def get_owner(self, obj):
+        selected_owner = Contributor.objects.get(
+            project=obj, role=Contributor.Role.OWNER
+        )
 
-    # def save(self, validated_data):
-    #     return validated_data
+        return ContributorSerializer(selected_owner, many=False).data
+
+    def get_contributors(self, obj):
+        selected_contributors = Contributor.objects.filter(
+            project=obj, role=Contributor.Role.CONTRIBUTOR
+        )  # .distinct()
+
+        return ContributorSerializer(selected_contributors, many=True).data
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -57,11 +77,6 @@ class IssueSerializer(serializers.ModelSerializer):
             "created_time",
         ]
 
-    # def create(self, validated_data):
-
-    #     print("CREATE ISSUE SERIALIZER:", self, validated_data)
-    #     return Issue.objects.create(**validated_data)
-
 
 class CommentSerializer(serializers.ModelSerializer):
 
@@ -79,12 +94,3 @@ class CommentSerializer(serializers.ModelSerializer):
             "issue",
             "created_time",
         ]
-
-
-class ContributorSerializer(serializers.ModelSerializer):
-
-    user_username = serializers.CharField(source="user.username", read_only=True)
-
-    class Meta:
-        model = Contributor
-        fields = ["id", "user", "user_username", "permission", "role", "project"]
