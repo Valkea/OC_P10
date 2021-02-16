@@ -28,12 +28,12 @@ import debug_toolbar
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("rest_framework.urls")),  # login / logout
+    # path("", include("rest_framework.urls")),  # login / logout
     path("", include("apps.api_issue_tracking.urls")),
     path("", include("apps.users.urls")),
-    path("auth-jwt/", obtain_jwt_token, name="login-jwt"),
-    path("auth-jwt-refresh/", refresh_jwt_token, name="renew-jwt"),
-    path("auth-jwt-verify/", verify_jwt_token, "verify-jwt"),
-    url("", RedirectView.as_view(pattern_name="login-jwt", permanent=False)),
+    path("login/", obtain_jwt_token, name="login-jwt"),
+    path("login/refresh/", refresh_jwt_token, name="renew-jwt"),
+    path("login/verify/", verify_jwt_token, "verify-jwt"),
+    # url("", RedirectView.as_view(pattern_name="login-jwt", permanent=False)),
     path("__debug__/", include(debug_toolbar.urls)),
 ]
