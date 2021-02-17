@@ -10,7 +10,7 @@ from .serializers import (
     CommentSerializer,
     ContributorSerializer,
 )
-from .permissions import IsOwnerOrContributor, IsProjectOwer, IsProjectContributor
+from .permissions import IsOwnerOrContributor, IsProjectOwer, IsProjectContributor, IsProjectList
 
 # from rest_framework import mixins
 # from rest_framework import generics
@@ -50,11 +50,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [
         (permissions.IsAuthenticated & IsProjectOwer)
         | (permissions.IsAuthenticated & IsProjectContributor)
+        | (permissions.IsAuthenticated & IsProjectList)
     ]
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):  # TODO Can I remove it ?
         print("CREATE PROJECT VIEWSET:", self, request, args, kwargs)
         return super().create(request, *args, **kwargs)
 
@@ -160,6 +161,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             issue_id = self.kwargs.get("issue_pk")
             issue = Issue.objects.get(id=issue_id)
 
+            print("REQUEST USER NEW COMMENT:", request.user)
+
             request.data.update({"author_user": request.user.id})
             request.data.update({"issue": issue.id})
 
@@ -179,8 +182,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class ContributorViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        (permissions.IsAuthenticated & IsProjectOwer)
-        | (permissions.IsAuthenticated & IsProjectContributor)
+        (permissions.IsAuthenticated & IsProjectOwer) |
+        (permissions.IsAuthenticated & IsProjectContributor)
     ]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()

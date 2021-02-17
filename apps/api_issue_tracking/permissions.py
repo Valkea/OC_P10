@@ -18,33 +18,49 @@ def has_contrib_permission(contrib, request):
     return True
 
 
+class IsProjectList(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        print(">>>>> IsProjectList > has_permission :", request, view)
+        return "project_pk" not in view.kwargs
+
+
 class IsProjectOwer(permissions.BasePermission):
 
     # called if the view-level
     def has_permission(self, request, view):
         print(">>>>> IsProjectOwer > has_permission :", request, view)
-        return True
-
-    # called on object level if 'has_permission' is True
-    def has_object_permission(self, request, view, obj):
-        print(">>>>> IsProjectOwer > has_object_permission :", request, view, obj)
-
-        if type(obj) == Project:
-            current_project = obj
-        elif type(obj) == Contributor:
-            current_project = obj.project
-        else:
-            return False
 
         try:
             contrib = Contributor.objects.get(
-                user=request.user, project=current_project, role=Contributor.Role.OWNER
+                user=request.user, project=view.kwargs.get("project_pk"), role=Contributor.Role.OWNER
             )
-
             return has_contrib_permission(contrib, request)
 
         except Contributor.DoesNotExist:
             return False
+
+    # called on object level if 'has_permission' is True
+    def has_object_permission(self, request, view, obj):
+        print(">>>>> IsProjectOwer > has_object_permission :", request, view, obj)
+        return True
+
+    #     if type(obj) == Project:
+    #         current_project = obj
+    #     elif type(obj) == Contributor:
+    #         current_project = obj.project
+    #     else:
+    #         return False
+
+    #     try:
+    #         contrib = Contributor.objects.get(
+    #             user=request.user, project=current_project, role=Contributor.Role.OWNER
+    #         )
+
+    #         return has_contrib_permission(contrib, request)
+
+    #     except Contributor.DoesNotExist:
+    #         return False
 
 
 class IsProjectContributor(permissions.BasePermission):
@@ -52,34 +68,42 @@ class IsProjectContributor(permissions.BasePermission):
     # called if the view-level
     def has_permission(self, request, view):
         print(">>>>> IsProjectContributor > has_permission :", request, view)
-        return True
+        try:
+            contrib = Contributor.objects.get(
+                user=request.user, project=view.kwargs.get("project_pk"), role=Contributor.Role.CONTRIBUTOR
+            )
+            return has_contrib_permission(contrib, request)
+
+        except Contributor.DoesNotExist:
+            return False
 
     # called on object level if 'has_permission' is True
     def has_object_permission(self, request, view, obj):
         print(
             ">>>>> IsProjectContributor > has_object_permission :", request, view, obj
         )
+        return True
 
-        if type(obj) == Project:
-            current_project = obj
-        elif type(obj) == Contributor:
-            current_project = obj.project
-        else:
-            return False
+    #     if type(obj) == Project:
+    #         current_project = obj
+    #     elif type(obj) == Contributor:
+    #         current_project = obj.project
+    #     else:
+    #         return False
 
-        try:
-            contrib = Contributor.objects.get(
-                user=request.user,
-                project=current_project,
-                role=Contributor.Role.CONTRIBUTOR,
-            )
+    #     try:
+    #         contrib = Contributor.objects.get(
+    #             user=request.user,
+    #             project=current_project,
+    #             role=Contributor.Role.CONTRIBUTOR,
+    #         )
 
-            if has_contrib_permission(contrib, request):
-                return request.method in permissions.SAFE_METHODS
-            return False
+    #         if has_contrib_permission(contrib, request):
+    #             return request.method in permissions.SAFE_METHODS
+    #         return False
 
-        except Contributor.DoesNotExist:
-            return False
+    #     except Contributor.DoesNotExist:
+    #         return False
 
 
 class IsOwnerOrContributor(permissions.BasePermission):
@@ -103,5 +127,7 @@ class IsOwnerOrContributor(permissions.BasePermission):
 
         if request.method in permissions.SAFE_METHODS:
             return True
+
+        print("users comp:", obj.author_user, request.user)
 
         return obj.author_user == request.user
