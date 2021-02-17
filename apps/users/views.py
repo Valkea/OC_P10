@@ -1,29 +1,27 @@
-from rest_framework import generics, mixins, permissions, status
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-from django.http import HttpResponse
 
 from .models import User
 from .serializers import UserSerializer, UserAPISerializer
+from .permissions import IsCurrentUser
 
 
-class UserViewSet(generics.ListAPIView):
+class UserDetailsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
-class UserDetail(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated & IsCurrentUser]
+    serializer_class = UserAPISerializer
     queryset = User.objects.all()
 
 
 class UserSignup(mixins.CreateModelMixin, generics.GenericAPIView):
 
-    # permission_classes = [permissions.AllowAny]
-    permission_classes = (permissions.AllowAny,)
-
+    permission_classes = [permissions.AllowAny]
     queryset = User.objects.all()
     serializer_class = UserAPISerializer
 

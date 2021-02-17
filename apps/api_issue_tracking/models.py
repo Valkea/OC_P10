@@ -74,13 +74,13 @@ class Issue(models.Model):
     author_user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="author",
+        related_name="author_user",
     )
 
     assignee_user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user),
-        related_name="assignees",
+        related_name="assignee_user",
         blank=True,
         null=True,
     )

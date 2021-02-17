@@ -15,18 +15,29 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import UserViewSet, UserDetail, UserSignup
+from .views import UserDetailsViewSet, UserViewSet, UserSignup
 
 urlpatterns = [
     path(
         "users/",
-        UserViewSet.as_view(),
+        UserDetailsViewSet.as_view(
+            {
+                "get": "list",
+                # "post": "create",
+            }
+        ),
         name="users_list",
     ),
     path(
         "users/<int:pk>/",
-        UserDetail.as_view(),
-        name="user_detail",
+        UserViewSet.as_view(
+            {
+                "put": "update",
+                "get": "retrieve",
+                "delete": "destroy",
+            }
+        ),
+        name="user_details",
     ),
     path("signup/", UserSignup.as_view(), name="user_signup"),
 ]
