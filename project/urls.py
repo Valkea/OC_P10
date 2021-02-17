@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-# from django.views.generic import RedirectView
-# from django.conf.urls import url
+from django.views.generic import RedirectView
+from django.conf.urls import url
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -44,6 +44,7 @@ urlpatterns = [
     path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # url("", RedirectView.as_view(pattern_name="login-jwt", permanent=False)),
+
+    url("", RedirectView.as_view(pattern_name="token_obtain_pair", permanent=False)),
     path("__debug__/", include(debug_toolbar.urls)),
 ]
