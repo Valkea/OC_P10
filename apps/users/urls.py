@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import UserViewSet, UserDetail
+from .views import UserViewSet, UserDetail, UserSignup
 
 urlpatterns = [
     path(
@@ -28,4 +28,5 @@ urlpatterns = [
         UserDetail.as_view(),
         name="user_detail",
     ),
+    path("signup/", UserSignup.as_view(), name="user_signup"),
 ]
