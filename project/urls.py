@@ -15,14 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
-from django.conf.urls import url
 
-from rest_framework_jwt.views import (
-    obtain_jwt_token,
-    refresh_jwt_token,
-    verify_jwt_token,
+# from django.views.generic import RedirectView
+# from django.conf.urls import url
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
 )
+
+# from rest_framework_jwt.views import (
+#     obtain_jwt_token,
+#     refresh_jwt_token,
+#     verify_jwt_token,
+# )
 
 import debug_toolbar
 
@@ -31,9 +38,12 @@ urlpatterns = [
     # path("", include("rest_framework.urls")),  # login / logout
     path("", include("apps.api_issue_tracking.urls")),
     path("", include("apps.users.urls")),
-    path("login/", obtain_jwt_token, name="login-jwt"),
-    path("login/refresh/", refresh_jwt_token, name="renew-jwt"),
-    path("login/verify/", verify_jwt_token, "verify-jwt"),
+    # path("login/", obtain_jwt_token, name="login-jwt"),
+    # path("login/refresh/", refresh_jwt_token, name="renew-jwt"),
+    # path("login/verify/", verify_jwt_token, "verify-jwt"),
+    path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     # url("", RedirectView.as_view(pattern_name="login-jwt", permanent=False)),
     path("__debug__/", include(debug_toolbar.urls)),
 ]
