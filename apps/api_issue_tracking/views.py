@@ -10,43 +10,10 @@ from .serializers import (
     CommentSerializer,
     ContributorSerializer,
 )
-from .permissions import IsOwnerOrContributor, IsProjectOwer, IsProjectContributor, IsProjectList
-
-# from rest_framework import mixins
-# from rest_framework import generics
-
-# class ProjectList(mixins.ListModelMixin,
-#                   mixins.CreateModelMixin,
-#                   generics.GenericAPIView):
-#     queryset = Project.objects.all()
-#     serializer_class = ProjectSerializer
-#
-#     def get(self, request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-#
-#     def post(self, request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
-#
-#
-# class ProjectDetail(mixins.RetrieveModelMixin,
-#                     mixins.UpdateModelMixin,
-#                     mixins.DestroyModelMixin,
-#                     generics.GenericAPIView):
-#     queryset = Project.objects.all()
-#     serializer_class = ProjectSerializer
-#
-#     def get(self, request, *args, **kwargs):
-#         return self.retrieve(request, *args, **kwargs)
-#
-#     def put(self, request, *args, **kwargs):
-#         return self.update(request, *args, **kwargs)
-#
-#     def delete(self, request, *args, **kwargs):
-#         return self.destroy(request, *args, **kwargs)
+from .permissions import IsProjectOwer, IsProjectContributor, IsProjectList
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [
         (permissions.IsAuthenticated & IsProjectOwer)
         | (permissions.IsAuthenticated & IsProjectContributor)
@@ -59,20 +26,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         print("CREATE PROJECT VIEWSET:", self, request, args, kwargs)
         return super().create(request, *args, **kwargs)
 
-    # def update(self, request, *args, **kwargs):
-    #     print("UPDATE PROJECT VIEWSET:", self, request, args, kwargs)
-    #     content = super().update(request, *args, **kwargs)
-    #     # return Response(content, status=status.HTTP_201_CREATED)
-    #     #return HttpResponse(content, content_type="application/json", status=status.HTTP_201_CREATED)
-    #     # return HttpResponse(status=201)
-
-    # def save(self, request, *args, **kwargs):
-    #     print("SAVE PROJECT VIEWSET:", self, request, args, kwargs)
-
 
 class IssueViewSet(viewsets.ModelViewSet):
-    # permission_classes = [permissions.IsAuthenticated & IsContributor]
-    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
+    permission_classes = [
+        (permissions.IsAuthenticated & IsProjectOwer)
+        | (permissions.IsAuthenticated & IsProjectContributor)
+    ]
     serializer_class = IssueSerializer
     queryset = Issue.objects.all()
 
@@ -86,27 +45,6 @@ class IssueViewSet(viewsets.ModelViewSet):
         except Project.DoesNotExist:
             raise NotFound(f"Project (id:{project_id}) does not exist")
 
-    # def update(self, request, *args, **kwargs):
-    #     try:
-    #         project_id = self.kwargs.get("project_pk")
-    #         Project.objects.get(id=project_id)
-
-    #         issue_id = self.kwargs.get("pk")
-    #         issue = Issue.objects.get(id=issue_id)
-
-    #         serializer = self.serializer_class(issue, data=request.data)
-
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #         else:
-    #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    #     except Project.DoesNotExist:
-    #         raise NotFound(f"A Project with id {project_id} does not exist")
-    #     except Issue.DoesNotExist:
-    #         raise NotFound(f"An Issue with id {issue_id} does not exist")
-
     def create(self, request, *args, **kwargs):
         print("CREATE ISSUE VIEWSET:", self, request, args, kwargs)
 
@@ -119,20 +57,15 @@ class IssueViewSet(viewsets.ModelViewSet):
 
             return super().create(request, *args, **kwargs)
 
-            # serializer = self.serializer_class(Issue(), data=request.data)
-
-            # if serializer.is_valid():
-            #     serializer.save()
-            #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-            # else:
-            #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
         except Project.DoesNotExist:
             raise NotFound(f"Project (id:{project_id}) does not exist")
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated & IsOwnerOrContributor]
+    permission_classes = [
+        (permissions.IsAuthenticated & IsProjectOwer)
+        | (permissions.IsAuthenticated & IsProjectContributor)
+    ]
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
@@ -161,8 +94,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             issue_id = self.kwargs.get("issue_pk")
             issue = Issue.objects.get(id=issue_id)
 
-            print("REQUEST USER NEW COMMENT:", request.user)
-
             request.data.update({"author_user": request.user.id})
             request.data.update({"issue": issue.id})
 
@@ -182,8 +113,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class ContributorViewSet(viewsets.ModelViewSet):
     permission_classes = [
-        (permissions.IsAuthenticated & IsProjectOwer) |
-        (permissions.IsAuthenticated & IsProjectContributor)
+        (permissions.IsAuthenticated & IsProjectOwer)
+        | (permissions.IsAuthenticated & IsProjectContributor)
     ]
     serializer_class = ContributorSerializer
     queryset = Contributor.objects.all()

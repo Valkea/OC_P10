@@ -118,6 +118,9 @@ class Contributor(models.Model):
     but as we need to add some extra fields, we must redefine it as a through model.
     """
 
+    class Meta:
+        unique_together = (("user", "project"),)
+
     class Role(models.TextChoices):
         OWNER = "OWNER", "Administrator"
         CONTRIBUTOR = "CONTRIB", "Contributor"
