@@ -122,7 +122,7 @@ class Contributor(models.Model):
         unique_together = (("user", "project"),)
 
     class Role(models.TextChoices):
-        OWNER = "OWNER", "Administrator"
+        ADMINISTRATOR = "ADMIN", "Administrator"
         CONTRIBUTOR = "CONTRIB", "Contributor"
 
     class Permission(models.TextChoices):
@@ -147,7 +147,7 @@ class Contributor(models.Model):
     )
 
     role = models.CharField(
-        "Role", max_length=10, choices=Role.choices, default=Role.OWNER
+        "Role", max_length=10, choices=Role.choices, default=Role.ADMINISTRATOR
     )
 
     def __str__(self):

@@ -35,7 +35,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         Contributor.objects.create(
             user=self.context["request"].user,
             permission=Contributor.Permission.ALL,
-            role=Contributor.Role.OWNER,
+            role=Contributor.Role.ADMINISTRATOR,
             project=new_project,
         )
 
@@ -43,7 +43,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_administrators(self, obj):
         selected = Contributor.objects.filter(
-            project=obj, role=Contributor.Role.OWNER
+            project=obj, role=Contributor.Role.ADMINISTRATOR
         )  # .distinct()
 
         return ContributorSerializer(selected, many=True).data

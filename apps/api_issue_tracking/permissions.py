@@ -33,7 +33,9 @@ class IsProjectOwer(permissions.BasePermission):
                 project_id = view.kwargs.get("pk")
 
             contrib = Contributor.objects.get(
-                user=request.user, project=project_id, role=Contributor.Role.OWNER
+                user=request.user,
+                project=project_id,
+                role=Contributor.Role.ADMINISTRATOR,
             )
             return has_contrib_permission(contrib, request)
 
