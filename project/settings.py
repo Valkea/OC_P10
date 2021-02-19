@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "apps.users",
     "rest_framework",
     "debug_toolbar",
+    # "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -167,3 +168,6 @@ SIMPLE_JWT = {
     #     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     #     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
+
+APPEND_SLASH = True
