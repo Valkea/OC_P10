@@ -2,8 +2,11 @@ from rest_framework import permissions
 
 
 class IsCurrentUser(permissions.BasePermission):
-    """Give permission if the current user is the same as the User's object,
-    so he/she can modify its information.
+    """
+    This permission class check whether or not the current user is the
+    same as the current User's object that is being manipulated.
+
+    This usually used when updating / deleting user's profiles.
     """
 
     # called if the view-level

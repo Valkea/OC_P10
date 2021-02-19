@@ -11,6 +11,11 @@ from .models import Project, Issue, Comment, Contributor
 
 
 class UserContribInline(admin.TabularInline):
+    """
+    Inline for displaying the Contributors of a given
+    project directly on it's admin page.
+    """
+
     model = Contributor
     fk_name = "project"
 
@@ -21,6 +26,11 @@ class UserContribInline(admin.TabularInline):
 
 
 class UserIssuesInline(admin.TabularInline):
+    """
+    Inline for displaying the Issues of a given
+    project directly on it's admin page.
+    """
+
     model = Issue
     fk_name = "project"
 
@@ -32,6 +42,7 @@ class UserIssuesInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    """ Define the 'Projects' admin section behaviors & displays. """
 
     inlines = [UserContribInline, UserIssuesInline]
 
@@ -58,6 +69,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
+    """ Define the 'Issues' admin section behaviors & displays. """
 
     fieldsets = [
         (
@@ -120,6 +132,7 @@ class IssueAdmin(admin.ModelAdmin):
 
 @admin.register(Contributor)
 class ContributorAdmin(admin.ModelAdmin):
+    """ Define the 'Contributors' admin section behaviors & displays. """
 
     fieldsets = [
         (
@@ -159,6 +172,7 @@ class ContributorAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
+    """ Define the 'Comments' admin section behaviors & displays. """
 
     fieldsets = [
         (

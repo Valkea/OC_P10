@@ -1,11 +1,15 @@
 from rest_framework import permissions
 from django.urls import resolve
 
-
 from .models import Project, Contributor, Issue, Comment
 
 
 def has_contrib_permission(contrib, request):
+    """
+    This function check whether or not the current user has permission to take
+    action on the current project, according to it's role permission flag.
+    """
+
     if contrib.permission == Contributor.Permission.NONE:
         return False
     elif contrib.permission == Contributor.Permission.READONLY:
@@ -14,15 +18,27 @@ def has_contrib_permission(contrib, request):
 
 
 class IsProjectList(permissions.BasePermission):
-    def has_permission(self, request, view):
-        """ Return True is the current view the the project listing """
+    """
+    This permission class check whether or not the current page is the project list.
+    If this is the case, it returns True, because this page only require to be authentified.
+    """
 
+    def has_permission(self, request, view):
         if request.path == "/projects/":
             return True
         return False
 
 
 class IsProjectOwer(permissions.BasePermission):
+    """
+    This permission class check whether or not the current user is one  of the
+    project's ADMINISTRATORS and if she/he can take actions on the current view/object.
+
+    - 1/ check if the current user has an ADMINISTRATOR role in the current project.
+    - 2/ check if its collaborator's 'permission' flag, allows to display the view.
+    - 3/ check if the current object require to be the author on top of being an ADMIN of the project.
+    """
+
     def has_permission(self, request, view):
         """ Define the Project's admins permissions on views """
 
@@ -54,6 +70,15 @@ class IsProjectOwer(permissions.BasePermission):
 
 
 class IsProjectContributor(permissions.BasePermission):
+    """
+    This permission class check whether or not the current user is one of the
+    project's CONTRIBUTORS and if she/he can take actions on the current view/object.
+
+    - 1/ check if the current user has an CONTRIBUTOR role in the current project.
+    - 2/ check if its collaborator's 'permission' flag, allows to display the view.
+    - 3/ check if the current object require to be the author on top of being a CONTRIBUTOR of the project.
+    """
+
     def has_permission(self, request, view):
         """ Define the Project's contributors permissions on views """
 

@@ -10,6 +10,11 @@ admin.site.unregister(Group)
 
 
 class UserContribInline(admin.TabularInline):
+    """
+    Inline for displaying the various roles taken in
+    the projects by a given user directly on it's admin page.
+    """
+
     model = Contributor
     fk_name = "user"
 
@@ -28,6 +33,11 @@ class UserContribInline(admin.TabularInline):
 
 
 class UserIssuesInline(admin.TabularInline):
+    """
+    Inline for displaying the created Issues
+    of a given user directly on it's admin page.
+    """
+
     model = Issue
     fk_name = "author_user"
 
@@ -55,6 +65,11 @@ class UserIssuesInline(admin.TabularInline):
 
 
 class UserAssigneesInline(admin.TabularInline):
+    """
+    Inline for displaying the assigned Issues
+    of a given user directly on it's admin page.
+    """
+
     model = Issue
     fk_name = "assignee_user"
 
@@ -82,6 +97,11 @@ class UserAssigneesInline(admin.TabularInline):
 
 
 class UserCommentsInline(admin.TabularInline):
+    """
+    Inline for displaying the Comments of a given user
+    directly on it's admin page.
+    """
+
     model = Comment
     fk_name = "author_user"
 
@@ -104,6 +124,8 @@ class UserCommentsInline(admin.TabularInline):
 
 @admin.register(User)
 class UserAdmin(UserAdmin):
+    """ Define the 'Users' admin section behaviors & displays. """
+
     inlines = [
         UserContribInline,
         UserIssuesInline,

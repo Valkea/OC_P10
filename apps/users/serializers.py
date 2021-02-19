@@ -6,6 +6,12 @@ from apps.api_issue_tracking.models import Comment, Issue
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    This serializer returns a translation of the FULL User model
+    extended with the user's created & assigned issues.
+
+    It is used whenever we need a very complete user's profile.
+    """
 
     date_joined = serializers.ReadOnlyField()
     comments_id = serializers.PrimaryKeyRelatedField(
@@ -47,6 +53,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserAPISerializer(serializers.ModelSerializer):
+    """
+    This serializer returns a LIGHT translation of the User model
+    extended with the user's created & assigned issues.
+
+    It is used whenever we need the bare minumum user's information.
+    """
+
     class Meta(object):
         model = User
         fields = (
@@ -60,6 +73,8 @@ class UserAPISerializer(serializers.ModelSerializer):
         # extra_kwargs = {"password": {"write_only": True}}
 
     def update(self, instance, validated_data):
+        """ Make sure to encode the password when updating the user's profile """
+
         instance.username = validated_data.get("username", instance.username)
         instance.first_name = validated_data.get("first_name", instance.first_name)
         instance.last_name = validated_data.get("last_name", instance.last_name)

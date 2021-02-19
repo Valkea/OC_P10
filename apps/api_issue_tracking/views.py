@@ -13,6 +13,10 @@ from .permissions import IsProjectOwer, IsProjectContributor, IsProjectList
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`api_issue_tracking.Project` instances using the ProjectSerializer
+    """
+
     permission_classes = [
         (permissions.IsAuthenticated & IsProjectOwer)
         | (permissions.IsAuthenticated & IsProjectContributor)
@@ -23,6 +27,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 
 class IssueViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`api_issue_tracking.Issue` instances using the IssueSerializer
+    """
+
     permission_classes = [
         (permissions.IsAuthenticated & IsProjectOwer)
         | (permissions.IsAuthenticated & IsProjectContributor)
@@ -31,6 +39,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
 
     def get_queryset(self, *args, **kwargs):
+        """ Handle nested project's 'pk' in the URI """
         try:
             project_id = self.kwargs.get("project_pk")
             project = Project.objects.get(id=project_id)
@@ -41,6 +50,7 @@ class IssueViewSet(viewsets.ModelViewSet):
             raise NotFound(f"Project (id:{project_id}) does not exist")
 
     def create(self, request, *args, **kwargs):
+        """ Custom create method used to setup the issue's Foreign-keys (author_user & project) """
 
         try:
             project_id = self.kwargs.get("project_pk")
@@ -64,7 +74,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
 
     def get_queryset(self, *args, **kwargs):
-
+        """ Handle nested project's and issue's 'pk' in the URI """
         try:
             project_id = self.kwargs.get("project_pk")
             Project.objects.get(id=project_id)
@@ -82,6 +92,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             )
 
     def create(self, request, *args, **kwargs):
+        """ Custom create method used to setup the comment's Foreign-keys (author_user & issue) """
 
         try:
             issue_id = self.kwargs.get("issue_pk")
@@ -113,6 +124,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
     queryset = Contributor.objects.all()
 
     def get_queryset(self, *args, **kwargs):
+        """ Handle nested project's 'pk' in the URI """
 
         try:
             project_id = self.kwargs.get("project_pk")

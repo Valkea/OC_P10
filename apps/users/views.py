@@ -8,27 +8,47 @@ from .permissions import IsCurrentUser
 
 
 class UserDetailsViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`users.User` instances using the UserSerializer
+
+    These are the FULL user views
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    Display :model:`users.User` instances using the UserAPISerializer
+
+    These are the LIGHT user views
+    """
+
     permission_classes = [permissions.IsAuthenticated & IsCurrentUser]
     serializer_class = UserAPISerializer
     queryset = User.objects.all()
 
 
 class UserSignup(mixins.CreateModelMixin, generics.GenericAPIView):
+    """
+    Display :model:`users.User` instances using the UserAPISerializer
+
+    This is a LIGHT user view just like UserViewSet, but they are
+    separated because the permissions are differents.
+    """
 
     permission_classes = [permissions.AllowAny]
     queryset = User.objects.all()
     serializer_class = UserAPISerializer
 
     def post(self, request, *args, **kwargs):
+        """ Allows to POST data to the API in order to create a new user """
         return self.create(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
+        """ Custom create method used to encrypt password before inserting data in the DB """
 
         serializer = UserAPISerializer(data=request.data)
 
