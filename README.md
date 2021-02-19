@@ -55,15 +55,17 @@ visit *http://127.0.0.1:8000/login/* and use the one of the demo credentials bel
 
 #### then read the API documentation
 
-The API documentation introduce the available endpoints with many examples and the expected HTTP status code.
+the API documentation introduce the available endpoints with many examples and the expected HTTP status code.
 *https://documenter.getpostman.com/view/13202435/TWDWJcvC*
 
 #### and test using the Postman of directly by browsing the API.
 
-The easiest way to test the endpoints once the local server is running is by using them in Postman.
+the easiest way to test the endpoints once the local server is running is by using them in Postman.
 
 However, you can also browse the API directly in your browser as long as you provide a valid JWT token in the header (except for signup & login).
-This can be done in many ways, such as using the 'ModHeader' browser plugin (wildly available). In this case, once installed, create an "Authorization" key and set the value as "JWT token" (where token is the access token returned when loggin-in). Then the API can be visited just like a simple website (as long as the token is valid and the user has right to use the endpoint).
+- This can be done in many ways, such as using the 'ModHeader' browser plugin (widely available).
+- In this case, once installed, create an "Authorization" key and set the value as "JWT token" (where token is the access token returned when logging-in).
+- Then the API can be visited just like a simple website (as long as the token is valid and the user has right to use the endpoint).
 
 ### as an admin of the API
 
@@ -77,14 +79,16 @@ visit *http://127.0.0.1:8000/zadmin* and use the demo credentials to access the 
 
 Once in the admin, you will be able to add, edit or remove 'users', 'projects', 'issues', 'collaborators' and 'comments'.
 
-"PROJECT MANAGER" block
+*PROJECT MANAGER*
+
 Even if all elements of the projects are available in this menu, the real main entry point is the "Projects" list, because when editing a project, we can also see and edit the associated issues, collaborators and comments.
 
 However the "Issues", "Collaborators" and "Comments" are still available in the menu just in case the API admin prefers to access them that way. Finally, the comments are in 'read-only' mode, because admin shouldn't be able to edit user's comments (and I wanted to test an admin section with read-only...).
 
-"USERS" block
-In the Users section you can indeed manage the user's informations but you can also see their comments, assigned issues, and created issues or projects.
-These informations are read-only from the users' profiles (but they can be edited from the projects entries).
+*USERS*
+
+In the Users section you can indeed manage the user's information, but you can also see their comments, assigned issues, and created issues or projects.
+These information are read-only from the users' profiles (but they can be edited from the project's entries).
 
 
 ## Documentation
