@@ -30,8 +30,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        print("CREATE PROJECT SERIALIZER:", self, validated_data)
-
         new_project = Project.objects.create(**validated_data)
 
         Contributor.objects.create(
@@ -56,13 +54,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         )  # .distinct()
 
         return ContributorSerializer(selected, many=True).data
-
-    # def get_owner(self, obj):
-    #     selected = Contributor.objects.get(
-    #         project=obj, role=Contributor.Role.OWNER
-    #     )
-
-    #     return ContributorSerializer(selected, many=False).data
 
 
 class IssueSerializer(serializers.ModelSerializer):

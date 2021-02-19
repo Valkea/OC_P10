@@ -26,7 +26,6 @@ class UserSignup(mixins.CreateModelMixin, generics.GenericAPIView):
     serializer_class = UserAPISerializer
 
     def post(self, request, *args, **kwargs):
-        print("DEBUG post new user:", request, args, kwargs)
         return self.create(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):

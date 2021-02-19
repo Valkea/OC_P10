@@ -97,7 +97,7 @@ class Comment(models.Model):
 
     author_user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user),
+        on_delete=models.CASCADE,
         related_name="comment_author",
     )
 

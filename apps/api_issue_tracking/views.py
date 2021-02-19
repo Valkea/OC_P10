@@ -1,4 +1,3 @@
-# from django.shortcuts import render
 from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -22,10 +21,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
 
-    def create(self, request, *args, **kwargs):  # TODO Can I remove it ?
-        print("CREATE PROJECT VIEWSET:", self, request, args, kwargs)
-        return super().create(request, *args, **kwargs)
-
 
 class IssueViewSet(viewsets.ModelViewSet):
     permission_classes = [
@@ -46,7 +41,6 @@ class IssueViewSet(viewsets.ModelViewSet):
             raise NotFound(f"Project (id:{project_id}) does not exist")
 
     def create(self, request, *args, **kwargs):
-        print("CREATE ISSUE VIEWSET:", self, request, args, kwargs)
 
         try:
             project_id = self.kwargs.get("project_pk")
@@ -88,7 +82,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             )
 
     def create(self, request, *args, **kwargs):
-        print("CREATE COMMENT VIEWSET:", self, request, args, kwargs)
 
         try:
             issue_id = self.kwargs.get("issue_pk")

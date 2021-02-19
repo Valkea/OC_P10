@@ -30,24 +30,6 @@ class UserIssuesInline(admin.TabularInline):
     verbose_name_plural = "Created Issues"
 
 
-# class UserCommentsInline(admin.TabularInline):
-#     model = Comment
-#     fk_name = "author_user"
-#
-#     extra = 0
-#
-#     verbose_name = "Wrote Comment"
-#     verbose_name_plural = "Wrote Comments"
-#
-#     readonly_fields = ['description', 'issue', ]
-#
-#     def has_add_permission(self, *args, **kwargs):
-#         return False
-#
-#     def has_delete_permission(self, *args, **kwargs):
-#         return False
-
-
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
 
@@ -61,13 +43,10 @@ class ProjectAdmin(admin.ModelAdmin):
                     "title",
                     "description",
                     "type",
-                    # "contributors",
                 ]
             },
         ),
     ]
-
-    # readonly_fields = ["date_joined", "last_login"]
 
     list_display = (
         "title",
