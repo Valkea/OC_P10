@@ -40,6 +40,33 @@ class UserIssuesInline(admin.TabularInline):
     verbose_name_plural = "Created Issues"
 
 
+class UserCommentsInline(admin.TabularInline):
+    """
+    Inline for displaying the Comments of a given
+    issue directly on it's admin page.
+    """
+
+    model = Comment
+    fk_name = "issue"
+
+    extra = 0
+
+    verbose_name = "Comment"
+    verbose_name_plural = "Comments"
+
+    readonly_fields = [
+        "author_user",
+        "description",
+        "issue",
+    ]
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     """ Define the 'Projects' admin section behaviors & displays. """
@@ -70,6 +97,8 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
     """ Define the 'Issues' admin section behaviors & displays. """
+
+    inlines = [UserCommentsInline]
 
     fieldsets = [
         (
