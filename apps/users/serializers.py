@@ -5,7 +5,7 @@ from .models import User
 from apps.api_issue_tracking.models import Comment, Issue
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserFullSerializer(serializers.ModelSerializer):
     """
     This serializer returns a translation of the FULL User model
     extended with the user's created & assigned issues.
@@ -52,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
 
-class UserAPISerializer(serializers.ModelSerializer):
+class UserMiniSerializer(serializers.ModelSerializer):
     """
     This serializer returns a LIGHT translation of the User model
     extended with the user's created & assigned issues.
