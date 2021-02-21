@@ -64,6 +64,20 @@ class IssueViewSet(viewsets.ModelViewSet):
         except Project.DoesNotExist:
             raise NotFound(f"Project (id:{project_id}) does not exist")
 
+    def update(self, request, *args, **kwargs):
+        """ Custom update method used to protect the issue's Foreign-keys (author_user & project) """
+        try:
+            project_id = self.kwargs.get("project_pk")
+            project = Project.objects.get(id=project_id)
+
+            request.data.update({"author_user": request.user.id})
+            request.data.update({"project": project.id})
+
+            return super().update(request, *args, **kwargs)
+
+        except Project.DoesNotExist:
+            raise NotFound(f"Project (id:{project_id}) does not exist")
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
@@ -103,13 +117,20 @@ class CommentViewSet(viewsets.ModelViewSet):
 
             return super().create(request, *args, **kwargs)
 
-            serializer = self.serializer_class(Comment(), data=request.data)
+        except Issue.DoesNotExist:
+            raise NotFound(f"Issue (id: {issue_id}) does not exist")
 
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        """ Custom update method used to protect the comment's Foreign-keys (author_user & issue) """
+
+        try:
+            issue_id = self.kwargs.get("issue_pk")
+            issue = Issue.objects.get(id=issue_id)
+
+            request.data.update({"author_user": request.user.id})
+            request.data.update({"issue": issue.id})
+
+            return super().update(request, *args, **kwargs)
 
         except Issue.DoesNotExist:
             raise NotFound(f"Issue (id: {issue_id}) does not exist")
