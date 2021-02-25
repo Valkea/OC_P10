@@ -66,7 +66,9 @@ class IsProjectOwer(permissions.BasePermission):
                 return request.user == obj.author_user
             return True
         elif type(obj) == Comment:
-            return request.user == obj.author_user
+            if request.method not in permissions.SAFE_METHODS:
+                return request.user == obj.author_user
+            return True
 
         return True
 
@@ -112,7 +114,9 @@ class IsProjectContributor(permissions.BasePermission):
                 return request.user == obj.author_user
             return True
         elif type(obj) == Comment:
-            return request.user == obj.author_user
+            if request.method not in permissions.SAFE_METHODS:
+                return request.user == obj.author_user
+            return True
         elif type(obj) == Project:
             return False
         elif type(obj) == Contributor:
