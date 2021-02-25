@@ -10,17 +10,29 @@ class IssuesTests(APITestCase):
     @classmethod
     def setUpClass(cls):
         cls.login_url = reverse("token_obtain_pair")
+
         cls.issue_list_url = reverse("project_issues", args=[1])
-        cls.issue2_1_url = reverse("project_issue", args=[2, 1])
+        cls.issue_list_url2 = reverse("project_issues", args=[2])
+
         cls.issue1_url = reverse("project_issue", args=[1, 1])
         cls.issue2_url = reverse("project_issue", args=[1, 2])
         cls.issue999_url = reverse("project_issue", args=[1, 999])
+
+        cls.issue2_1_url = reverse("project_issue", args=[2, 1])
 
     @classmethod
     def tearDownClass(cls):
         pass
 
     def setUp(self):
+
+        # 'we' are u1
+        #
+        # p1 (u1, u2)
+        # -i1 (u1)
+        # -i2 (u2)
+        # p2 (u2)
+        # -i3 (u2)
 
         u1 = User.objects.create_user(
             username="demo_user", email="user@foo.com", password="demopass"
@@ -31,24 +43,35 @@ class IssuesTests(APITestCase):
 
         u1.save()
         u2.save()
-
         self.user = u1
 
-        # Project & Contributor
+        # Projects
 
         p1 = Project.objects.create(title="projet 1", description="le projet 1")
-        p2 = Project.objects.create(title="projet 2", description="le projet 2 sans contrib")
+        p2 = Project.objects.create(
+            title="projet 2", description="le projet 2 sans contrib"
+        )
 
         p1.save()
         p2.save()
 
-        self.projet = p1
+        # Collaborators
 
         c1 = Contributor.objects.create(
             user=u1, project=p1, permission="ALL", role="ADMIN"
         )
 
+        c2 = Contributor.objects.create(
+            user=u2, project=p1, permission="ALL", role="ADMIN"
+        )
+
+        c3 = Contributor.objects.create(
+            user=u2, project=p2, permission="ALL", role="ADMIN"
+        )
+
         c1.save()
+        c2.save()
+        c3.save()
 
         # Issues
 
@@ -66,11 +89,21 @@ class IssuesTests(APITestCase):
             author_user=u2,
         )
 
+        i3 = Issue.objects.create(
+            title="Issue 1 P2",
+            description="l'issue 1 du P2",
+            project=p2,
+            author_user=u2,
+        )
+
         i1.save()
         i2.save()
+        i3.save()
 
     def tearDown(self):
         pass
+
+    # --- HELPERS FUNCTIONS ---
 
     def login(self):
         resp = self.client.post(
@@ -178,21 +211,6 @@ class IssuesTests(APITestCase):
         resp = self.client.get(self.issue1_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_sad_issue_fetch_other_issue_same_project(self):
-        self.login()
-        resp = self.client.get(self.issue2_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-    def test_sad_issue_fetch_other_project_issue(self):
-        self.login()
-        resp = self.client.get(self.issue2_1_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_sad_issue_fetch_not_in_db(self):
-        self.login()
-        resp = self.client.get(self.issue999_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
     # --- UPDATE ISSUE ---
 
     def test_happy_issue_update_full(self):
@@ -202,7 +220,10 @@ class IssuesTests(APITestCase):
             {
                 "title": "Nouveau titre projet 1",
                 "description": "Nouvelle description",
-                "type": "AN",
+                "tag": "BUG",
+                "priority": "L",
+                "status": "TODO",
+                # "assignee_user": null,
             },
             format="json",
         )
@@ -244,24 +265,6 @@ class IssuesTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_happy_issue_update_not_contrib(self):
-        self.login()
-        resp = self.client.put(
-            self.issue2_url,
-            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_happy_issue_update_non_existing_issue(self):
-        self.login()
-        resp = self.client.put(
-            self.issue999_url,
-            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
     # --- DELETE USER ---
 
     def test_happy_issue_delete(self):
@@ -273,11 +276,92 @@ class IssuesTests(APITestCase):
         resp = self.client.delete(self.issue1_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # --- ACT ON AN ISSUE OF A PROJECT ON WHICH CURRENT USER IS NOT COLLABORATOR ---
+
+    # LIST
+    def test_sad_issues_list_other_project(self):
+        self.login()
+        resp = self.client.get(self.issue_list_url2, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # CREATE
+    def test_sad_new_issue_other_project(self):
+        self.login()
+        resp = self.client.post(
+            self.issue_list_url2,
+            {
+                "title": "New Issue...",
+                "description": "Description de l'issue",
+            },
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # FETCH
+    def test_sad_issue_fetch_other_project_issue(self):
+        self.login()
+        resp = self.client.get(self.issue2_1_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # UPDATE
+    def test_happy_issue_update_other_project_issue(self):
+        self.login()
+        resp = self.client.put(
+            self.issue2_1_url,
+            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # DELETE
+    def test_sad_issue_delete_other_project_issue(self):
+        self.login()
+        resp = self.client.delete(self.issue2_1_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # --- ACT ON AN ISSUE CREATED BY ANOTHER COLLABORATOR OF THE SAME PROJECT ---
+
+    # FETCH
+    def test_sad_issue_fetch_not_creator(self):
+        self.login()
+        resp = self.client.get(self.issue2_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    # UPDATE
+    def test_happy_issue_update_not_creator(self):
+        self.login()
+        resp = self.client.put(
+            self.issue2_url,
+            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # DELETE
     def test_sad_issue_delete_not_creator(self):
         self.login()
         resp = self.client.delete(self.issue2_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
+    # --- ACT ON NON EXISTING ISSUE ---
+
+    # FETCH
+    def test_sad_issue_fetch_not_in_db(self):
+        self.login()
+        resp = self.client.get(self.issue999_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    # UPDATE
+    def test_happy_issue_update_not_in_db(self):
+        self.login()
+        resp = self.client.put(
+            self.issue999_url,
+            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    # DELETE
     def test_sad_issue_delete_not_in_db(self):
         self.login()
         resp = self.client.delete(self.issue999_url, data={"format": "json"})
