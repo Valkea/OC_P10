@@ -108,6 +108,9 @@ The applications views are documented using the Django admindoc format.
 
 However the admindoc module is not activated at the moment.
 
+Also, the Postman API documentation is available here: 
+*https://documenter.getpostman.com/view/13202435/TWDWJcvC*
+
 
 ## PEP8
 
