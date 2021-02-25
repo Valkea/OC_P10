@@ -62,7 +62,9 @@ class IsProjectOwer(permissions.BasePermission):
         """ Define the Project's admins permissions on object level """
 
         if type(obj) == Issue:
-            return request.user == obj.author_user
+            if request.method not in permissions.SAFE_METHODS:
+                return request.user == obj.author_user
+            return True
         elif type(obj) == Comment:
             return request.user == obj.author_user
 
@@ -106,7 +108,9 @@ class IsProjectContributor(permissions.BasePermission):
         """ Define the Project's contributors permissions on object level """
 
         if type(obj) == Issue:
-            return request.user == obj.author_user
+            if request.method not in permissions.SAFE_METHODS:
+                return request.user == obj.author_user
+            return True
         elif type(obj) == Comment:
             return request.user == obj.author_user
         elif type(obj) == Project:
