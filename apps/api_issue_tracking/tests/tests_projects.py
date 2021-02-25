@@ -21,29 +21,48 @@ class ProjectsTests(APITestCase):
 
     def setUp(self):
 
+        # 'we' are u1
+        #
+        # p1 (u1)
+        # p2 (u2)
+
         u1 = User.objects.create_user(
             username="demo_user", email="user@foo.com", password="demopass"
         )
 
-        u1.save()
+        u2 = User.objects.create_user(
+            username="demo_user2", email="user2@foo.com", password="demopass2"
+        )
 
+        u1.save()
+        u2.save()
         self.user = u1
 
-        p1 = Project.objects.create(title="projet 1", description="le projet 1")
+        # Projects
 
+        p1 = Project.objects.create(title="projet 1", description="le projet 1")
         p2 = Project.objects.create(title="projet 2", description="le projet 2")
 
         p1.save()
         p2.save()
 
+        # Contributors
+
         c1 = Contributor.objects.create(
             user=u1, project=p1, permission="ALL", role="ADMIN"
         )
 
+        c2 = Contributor.objects.create(
+            user=u2, project=p2, permission="ALL", role="ADMIN"
+        )
+
         c1.save()
+        c2.save()
 
     def tearDown(self):
         pass
+
+    # --- HELPERS FUNCTIONS ---
 
     def login(self):
         resp = self.client.post(
@@ -116,7 +135,7 @@ class ProjectsTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_happy_project_mising_desc(self):
+    def test_happy_project_missing_desc(self):
         self.login()
         resp = self.client.post(
             self.project_list_url,
@@ -145,16 +164,6 @@ class ProjectsTests(APITestCase):
     def test_sad_projects_fetch_no_auth(self):
         resp = self.client.get(self.project1_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_sad_project_fetch_other_project(self):
-        self.login()
-        resp = self.client.get(self.project2_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_sad_project_fetch_not_in_db(self):
-        self.login()
-        resp = self.client.get(self.project999_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)  # NOTE 404 ?
 
     # --- UPDATE PROJECT ---
 
@@ -207,24 +216,6 @@ class ProjectsTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_happy_project_update_not_contrib(self):
-        self.login()
-        resp = self.client.put(
-            self.project2_url,
-            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_happy_project_update_non_existing_project(self):
-        self.login()
-        resp = self.client.put(
-            self.project999_url,
-            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
-            format="json",
-        )
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)  # NOTE 404 ?
-
     # --- DELETE USER ---
 
     def test_happy_project_delete(self):
@@ -236,11 +227,49 @@ class ProjectsTests(APITestCase):
         resp = self.client.delete(self.project1_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_sad_project_delete_not_current_user(self):
+    # --- ACT ON A PROJECT ON WHICH CURRENT USER IS NOT COLLABORATOR ---
+
+    # FETCH
+    def test_sad_project_fetch_non_collab_project(self):
+        self.login()
+        resp = self.client.get(self.project2_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # UPDATE
+    def test_happy_project_update_non_collab_project(self):
+        self.login()
+        resp = self.client.put(
+            self.project2_url,
+            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # DELETE
+    def test_sad_project_delete_non_collab_project(self):
         self.login()
         resp = self.client.delete(self.project2_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
+    # --- ACT ON NON EXISTING PROJECT ---
+
+    # FETCH
+    def test_sad_project_fetch_not_in_db(self):
+        self.login()
+        resp = self.client.get(self.project999_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)  # NOTE 404 ?
+
+    # UPDATE
+    def test_happy_project_update_not_in_db(self):
+        self.login()
+        resp = self.client.put(
+            self.project999_url,
+            {"title": "Nouveau titre projet 1", "description": "Nouvelle description"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)  # NOTE 404 ?
+
+    # DELETE
     def test_sad_project_delete_not_in_db(self):
         self.login()
         resp = self.client.delete(self.project999_url, data={"format": "json"})
