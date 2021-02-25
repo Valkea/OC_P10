@@ -92,8 +92,9 @@ These information are read-only from the users' profiles (but they can be edited
 
 
 ## Tests
-You can test the modules of the script with unittest.
+Unit tests were written in order to test the models & permissions.
 
+You can run all the tests with the following command
 ```bash
 >>> python manage.py test apps
 ```
