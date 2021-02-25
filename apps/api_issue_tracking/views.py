@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from django.http import HttpResponse
 
 from .models import Project, Issue, Comment, Contributor
 from .serializers import (
@@ -8,6 +9,7 @@ from .serializers import (
     IssueSerializer,
     CommentSerializer,
     ContributorSerializer,
+    ContributorUpdateSerializer,
 )
 from .permissions import IsProjectOwer, IsProjectContributor, IsProjectList
 
@@ -155,3 +157,23 @@ class ContributorViewSet(viewsets.ModelViewSet):
 
         except Project.DoesNotExist:
             raise NotFound(f"A Project with id {project_id} does not exist")
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.request.method == "PUT":
+            serializer_class = ContributorUpdateSerializer
+        return serializer_class
+
+    def update(self, request, *args, **kwargs):
+        """ Make sure the body isn't empty """
+
+        if "user" in request.data or "project" in request.data:
+            return HttpResponse(
+                "{'detail': 'readonly field'}", status=status.HTTP_403_FORBIDDEN
+            )
+        elif "permission" not in request.data and "role" not in request.data:
+            return HttpResponse(
+                "{'detail': 'no field to update'}", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return super().update(request, *args, **kwargs)

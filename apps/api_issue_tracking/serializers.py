@@ -13,6 +13,14 @@ class ContributorSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "user_username", "permission", "role", "project"]
 
 
+class ContributorUpdateSerializer(serializers.ModelSerializer):
+    """ This serializer returns a translation of the Contributor model for PUT calls. """
+
+    class Meta:
+        model = Contributor
+        fields = ["permission", "role"]
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     """
     This serializer returns a translation of the Project model,
