@@ -91,6 +91,16 @@ In the Users section you can indeed manage the user's information, but you can a
 These information are read-only from the users' profiles (but they can be edited from the project's entries).
 
 
+## Tests
+You can test the modules of the script with unittest.
+
+```bash
+>>> python manage.py test apps
+```
+**Warning**
+Don't run `unittest` directly, use the Django's manager.
+
+
 ## Documentation
 
 The applications views are documented using the Django admindoc format.
