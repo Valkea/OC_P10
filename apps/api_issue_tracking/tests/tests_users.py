@@ -35,6 +35,8 @@ class UsersTests(APITestCase):
     def tearDown(self):
         pass
 
+    # --- HELPERS FUNCTIONS ---
+
     def login(self):
         resp = self.client.post(
             self.login_url,
@@ -93,13 +95,39 @@ class UsersTests(APITestCase):
 
     # --- SIGNUP ---
 
-    def test_happy_signup(self):
+    def test_happy_signup_full(self):
+        resp = self.client.post(
+            self.signup_url,
+            {
+                "username": "new_user",
+                "password": "new_user_pass",
+                "first_name": "first name",
+                "last_name": "last name",
+                "email": "user@email.com",
+            },
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+    def test_happy_signup_min(self):
         resp = self.client.post(
             self.signup_url,
             {"username": "new_user", "password": "new_user_pass"},
             format="json",
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+    def test_happy_signup_not_an_email(self):
+        resp = self.client.post(
+            self.signup_url,
+            {
+                "username": "new_user",
+                "password": "new_user_pass",
+                "email": "noAnEmail.com",
+            },
+            format="json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sad_signup_missing_username(self):
         resp = self.client.post(
@@ -138,11 +166,6 @@ class UsersTests(APITestCase):
     def test_sad_users_fetch_no_auth(self):
         resp = self.client.get(self.user1_details_url, data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_sad_user_fetch_not_in_db(self):
-        self.login()
-        resp = self.client.get(self.user999_details_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     # --- UPDATE USER ---
 
@@ -226,6 +249,26 @@ class UsersTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    # --- DELETE USER ---
+
+    def test_happy_user_delete(self):
+        self.login()
+        resp = self.client.delete(self.user1_details_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_sad_users_delete_no_auth(self):
+        resp = self.client.delete(self.user1_details_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # --- ACT ON SOMEONE ELSE PROFILE ---
+
+    # FETCH
+    def test_happy_user_fetch_not_current_user(self):
+        self.login()
+        resp = self.client.get(self.user2_details_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    # UPDATE
     def test_sad_user_update_not_current_user(self):
         resp = self.client.put(
             self.user2_details_url,
@@ -237,7 +280,22 @@ class UsersTests(APITestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_sad_user_update_not_existing_user(self):
+    # DELETE
+    def test_sad_user_delete_not_current_user(self):
+        self.login()
+        resp = self.client.delete(self.user2_details_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    # --- ACT ON NON EXISTING PROFILE ---
+
+    # FETCH
+    def test_sad_user_fetch_not_in_db(self):
+        self.login()
+        resp = self.client.get(self.user999_details_url, data={"format": "json"})
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    # UPDATE
+    def test_sad_user_update_not_in_db(self):
         resp = self.client.put(
             self.user999_details_url,
             {
@@ -250,22 +308,7 @@ class UsersTests(APITestCase):
             resp.status_code, status.HTTP_401_UNAUTHORIZED
         )  # NOTE not 404 ?
 
-    # --- DELETE USER ---
-
-    def test_happy_user_delete(self):
-        self.login()
-        resp = self.client.delete(self.user1_details_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_sad_users_delete_no_auth(self):
-        resp = self.client.delete(self.user1_details_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_sad_user_delete_not_current_user(self):
-        self.login()
-        resp = self.client.delete(self.user2_details_url, data={"format": "json"})
-        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-
+    # DELETE
     def test_sad_user_delete_not_in_db(self):
         self.login()
         resp = self.client.delete(self.user999_details_url, data={"format": "json"})
@@ -300,6 +343,7 @@ class JwtTests(APITestCase):
         # print(token)
 
         verification_url = reverse("token_verify")
+
         resp = self.client.post(verification_url, {"token": token}, format="json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
@@ -307,9 +351,11 @@ class JwtTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
         client = APIClient()
+
         client.credentials(HTTP_AUTHORIZATION="JWT " + "abc")
         resp = client.get("/projects/", data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
         client.credentials(HTTP_AUTHORIZATION="JWT " + token)
         resp = client.get("/projects/", data={"format": "json"})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
